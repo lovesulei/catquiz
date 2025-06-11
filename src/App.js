@@ -14,18 +14,25 @@ function App() {
 
   const handleUpload = async (e) => {
     const file = e.target.files[0];
+    if (!file) return;
+
     setPreview(URL.createObjectURL(file));
     setLoading(true);
     setResults(null);
     setCoupleText('');
 
     try {
-      const emotions = await analyzeEmotionsFacePP(file); // array of up to 2 emotions
+      const emotions = await analyzeEmotionsFacePP(file);
+      console.log('Detected emotions:', emotions);
 
-      // Map each emotion to breed description in parallel
+      if (!emotions || !Array.isArray(emotions) || emotions.length === 0) {
+        throw new Error('No face detected.');
+      }
+
       const breedResults = await Promise.all(
         emotions.map((emotion) => getCatBreedFromEmotion(emotion))
       );
+      console.log('Breed results:', breedResults);
 
       setResults(breedResults);
 
@@ -34,10 +41,12 @@ function App() {
         setCoupleText(summary);
       }
     } catch (err) {
-      console.error(err);
+      console.error('Error in handleUpload:', err);
       setResults(['Could not detect faces or fetch results 😿']);
+      setCoupleText('');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
