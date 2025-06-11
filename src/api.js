@@ -9,11 +9,12 @@ export async function analyzeEmotionsFacePP(imageFile) {
   formData.append('return_attributes', 'emotion');
   formData.append('image_file', imageFile);
 
-  console.log(process.env.REACT_APP_FACEPP_KEY);
+  console.log('imageFile:', imageFile);
+console.log('type:', imageFile.type);
+ console.log('API KEY:', process.env.REACT_APP_FACEPP_KEY);
+console.log('API SECRET:', process.env.REACT_APP_FACEPP_SECRET);
 
-  const response = await axios.post(url, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+  const response = await axios.post(url, formData);
 console.log('Face++ response:', response.data);
 
   const faces = response.data.faces;
